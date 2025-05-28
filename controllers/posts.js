@@ -12,8 +12,9 @@ module.exports = {
   },
   getFeed: async (req, res) => {
     try {
-      const posts = await Post.find().sort({ createdAt: "desc" }).lean();
-      res.render("feed.ejs", { posts: posts });
+      const query = req.query.tag ? { tags: req.query.tag } : {};
+      const posts = await Post.find(query).sort({ createdAt: "desc" }).lean();
+      res.render("feed.ejs", { posts: posts, selectedTag: req.query.tag });
     } catch (err) {
       console.log(err);
     }
@@ -56,6 +57,7 @@ module.exports = {
         cloudinaryId: result.public_id,
         caption: req.body.caption,
         likes: 0,
+        tags: req.body.tags ? req.body.tags.split(',').map(tag => tag.trim()) : [],
         user: req.user.id,
       });
 

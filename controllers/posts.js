@@ -28,8 +28,20 @@ module.exports = {
   },
   createPost: async (req, res) => {
     try {
+      // Validate request
+      if (!req.file) {
+        console.log("No file uploaded");
+        return res.redirect("/profile");
+      }
+
+      if (!req.body.title || !req.body.caption) {
+        console.log("Missing required fields");
+        return res.redirect("/profile");
+      }
+
       // Log the file path being uploaded
       console.log(`Uploading image from path: ${req.file.path}`);
+      console.log(`File details:`, req.file);
 
       // Upload image to cloudinary
       const result = await cloudinary.uploader.upload(req.file.path);
@@ -37,7 +49,8 @@ module.exports = {
       // Log the result from Cloudinary
       console.log(`Cloudinary upload result: ${JSON.stringify(result)}`);
 
-      await Post.create({
+      // Create the post
+      const post = await Post.create({
         title: req.body.title,
         image: result.secure_url,
         cloudinaryId: result.public_id,
@@ -45,11 +58,12 @@ module.exports = {
         likes: 0,
         user: req.user.id,
       });
-      console.log("Post has been added!");
+
+      console.log("Post has been added successfully:", post);
       res.redirect("/profile");
     } catch (err) {
       console.log(`Error creating post: ${err}`);
-      res.redirect("/profile");
+      return res.redirect("/profile");
     }
   },
 

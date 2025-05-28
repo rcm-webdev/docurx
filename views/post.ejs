@@ -26,6 +26,16 @@
     </div>
     <div class="col-3 mt-5">
       <p><%= post.caption %></p>
+      <% if (post.tags && post.tags.length > 0) { %>
+        <div class="mt-3">
+          <h4>Tags:</h4>
+          <div class="d-flex flex-wrap gap-2">
+            <% post.tags.forEach(function(tag) { %>
+              <a href="/feed?tag=<%= tag %>" class="badge bg-secondary text-decoration-none"><%= tag %></a>
+            <% }); %>
+          </div>
+        </div>
+      <% } %>
     </div>
     <div class="col-6 mt-5">
       <a class="btn btn-primary" href="/profile">Return to Profile</a>
